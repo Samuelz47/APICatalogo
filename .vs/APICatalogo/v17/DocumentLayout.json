@@ -3,8 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|c:\\users\\samuk\\source\\repos\\apicatalogo\\apicatalogo\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|solutionrelative:apicatalogo\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
+      "AbsoluteMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|c:\\users\\samuk\\source\\repos\\apicatalogo\\apicatalogo\\controllers\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|solutionrelative:apicatalogo\\controllers\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|c:\\users\\samuk\\source\\repos\\apicatalogo\\apicatalogo\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|solutionrelative:apicatalogo\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|c:\\users\\samuk\\source\\repos\\apicatalogo\\apicatalogo\\domain\\entities\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -15,20 +19,12 @@
       "RelativeMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|solutionrelative:apicatalogo\\domain\\entities\\category.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|c:\\users\\samuk\\source\\repos\\apicatalogo\\apicatalogo\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|solutionrelative:apicatalogo\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|c:\\users\\samuk\\source\\repos\\apicatalogo\\apicatalogo\\apicatalogo.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
       "RelativeMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|solutionrelative:apicatalogo\\apicatalogo.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|c:\\users\\samuk\\source\\repos\\apicatalogo\\apicatalogo\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|solutionrelative:apicatalogo\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|c:\\users\\samuk\\source\\repos\\apicatalogo\\apicatalogo\\migrations\\20250828011754_initialmigration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{27A8FC09-A5C2-4682-9F56-5E60B7A504E6}|APICatalogo\\APICatalogo.csproj|solutionrelative:apicatalogo\\migrations\\20250828011754_initialmigration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -47,31 +43,45 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": ".gitignore",
-              "DocumentMoniker": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\.gitignore",
-              "RelativeDocumentMoniker": "APICatalogo\\.gitignore",
-              "ToolTip": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\.gitignore",
-              "RelativeToolTip": "APICatalogo\\.gitignore",
-              "ViewState": "AgIAAIwBAAAAAAAAAAAAAK4BAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2025-08-28T01:24:00.859Z",
+              "Title": "ProductsController.cs",
+              "DocumentMoniker": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\Controllers\\ProductsController.cs",
+              "RelativeDocumentMoniker": "APICatalogo\\Controllers\\ProductsController.cs",
+              "ToolTip": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\Controllers\\ProductsController.cs",
+              "RelativeToolTip": "APICatalogo\\Controllers\\ProductsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-29T00:46:01.099Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "20250828011754_InitialMigration.cs",
-              "DocumentMoniker": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\Migrations\\20250828011754_InitialMigration.cs",
-              "RelativeDocumentMoniker": "APICatalogo\\Migrations\\20250828011754_InitialMigration.cs",
-              "ToolTip": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\Migrations\\20250828011754_InitialMigration.cs",
-              "RelativeToolTip": "APICatalogo\\Migrations\\20250828011754_InitialMigration.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "Product.cs",
+              "DocumentMoniker": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\Domain\\Entities\\Product.cs",
+              "RelativeDocumentMoniker": "APICatalogo\\Domain\\Entities\\Product.cs",
+              "ToolTip": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\Domain\\Entities\\Product.cs",
+              "RelativeToolTip": "APICatalogo\\Domain\\Entities\\Product.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-28T01:17:54.627Z"
+              "WhenOpened": "2025-08-28T00:04:21.815Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\Program.cs",
+              "RelativeDocumentMoniker": "APICatalogo\\Program.cs",
+              "ToolTip": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\Program.cs",
+              "RelativeToolTip": "APICatalogo\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-26T23:25:31.163Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "Category.cs",
               "DocumentMoniker": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\Domain\\Entities\\Category.cs",
               "RelativeDocumentMoniker": "APICatalogo\\Domain\\Entities\\Category.cs",
@@ -79,19 +89,8 @@
               "RelativeToolTip": "APICatalogo\\Domain\\Entities\\Category.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-28T00:06:04.522Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Product.cs",
-              "DocumentMoniker": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\Domain\\Entities\\Product.cs",
-              "RelativeDocumentMoniker": "APICatalogo\\Domain\\Entities\\Product.cs",
-              "ToolTip": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\Domain\\Entities\\Product.cs",
-              "RelativeToolTip": "APICatalogo\\Domain\\Entities\\Product.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAeAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-28T00:04:21.815Z"
+              "WhenOpened": "2025-08-28T00:06:04.522Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -104,18 +103,6 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2025-08-28T00:04:07.144Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\Program.cs",
-              "RelativeDocumentMoniker": "APICatalogo\\Program.cs",
-              "ToolTip": "C:\\Users\\samuk\\source\\repos\\APICatalogo\\APICatalogo\\Program.cs",
-              "RelativeToolTip": "APICatalogo\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-26T23:25:31.163Z"
             },
             {
               "$type": "Document",
