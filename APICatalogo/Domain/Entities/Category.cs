@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using APICatalogo.Domain.Validation;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace APICatalogo.Domain.Entities;
@@ -13,6 +14,7 @@ public class Category
     public int Id { get; set; }
     [Required]
     [StringLength(80)]
+    [Uppercase]
     public string? Name { get; set; }
     [Required]
     [StringLength(300)]

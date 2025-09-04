@@ -1,4 +1,5 @@
 ﻿using APICatalogo.Domain.Entities;
+using APICatalogo.Filters;
 using APICatalogo.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet]
+    [ServiceFilter(typeof(ApiLoggingFilter))]       //Aplicando filtro de loginng
     public async Task<ActionResult<IEnumerable<Category>>> Get()                         //ActionResult funciona como um tipo de retorno pra aceitar o NotFound caso o retorno não seja um Enumerable<Category>
     {
         //Estamos usando async visto que o método faz consulta direta no Banco de Dados
@@ -41,14 +43,7 @@ public class CategoryController : ControllerBase
     [HttpGet("products")]                   //Não podemos ter duas rotas iguais, por isso dado o nome a essa
     public async Task<ActionResult<IEnumerable<Category>>> GetCategoriesProducts()
     {
-        try
-        {
-            return await _context.Categories.Include(p => p.Products).AsNoTracking().ToListAsync();
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, "Ocorreu um erro");
-        }
+        return await _context.Categories.Include(p => p.Products).AsNoTracking().ToListAsync();
     }
 
     [HttpPost]

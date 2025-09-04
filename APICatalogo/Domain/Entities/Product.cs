@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using APICatalogo.Domain.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -10,6 +11,7 @@ public class Product
     public int Id { get; set; }
     [Required]
     [StringLength(80)]
+    [Uppercase]
     public string? Name { get; set; }
     [Required]
     [StringLength(300)]
