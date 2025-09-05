@@ -1,6 +1,7 @@
 ﻿using APICatalogo.Domain.Entities;
 using APICatalogo.Filters;
 using APICatalogo.Infrastructure;
+using APICatalogo.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,40 +11,29 @@ namespace APICatalogo.Controllers;
 [ApiController]
 public class CategoryController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    public CategoryController(AppDbContext context)
+    private readonly ICategoryRepository _repository;
+    public CategoryController(ICategoryRepository repository)
     {
-        _context = context;
+        _repository = repository;
     }
 
     [HttpGet]
     [ServiceFilter(typeof(ApiLoggingFilter))]       //Aplicando filtro de loginng
-    public async Task<ActionResult<IEnumerable<Category>>> Get()                         //ActionResult funciona como um tipo de retorno pra aceitar o NotFound caso o retorno não seja um Enumerable<Category>
+    public ActionResult<IEnumerable<Category>> Get()                         //ActionResult funciona como um tipo de retorno pra aceitar o NotFound caso o retorno não seja um Enumerable<Category>
     {
-        //Estamos usando async visto que o método faz consulta direta no Banco de Dados
-        var categories =  await _context.Categories.AsNoTracking().ToListAsync();                          //Cria a lista de produtos, onde usamos Enumerable pois consome menos memoria nesse caso
-        if (categories is null)
-        {
-            return NotFound("Produtos não encontrados");
-        }
-        return categories;
+        var categories = _repository.GetCategories();
+        return Ok(categories);
     }
 
     [HttpGet("{id:int:min(1)}", Name = "GetCategory")]
-    public async Task<ActionResult<Category>> Get(int id)
+    public ActionResult<Category> Get(int id)
     {
-        var category = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);      //AsNoTracking é usado pras consultas nao serem rastreadas assim diminuindo sobrecarga na memoria
+        var category = _repository.GetCategoryById(id);      
         if (category is null)
         {
             return NotFound("Id inexistente");
         }
-        return category;
-    }
-
-    [HttpGet("products")]                   //Não podemos ter duas rotas iguais, por isso dado o nome a essa
-    public async Task<ActionResult<IEnumerable<Category>>> GetCategoriesProducts()
-    {
-        return await _context.Categories.Include(p => p.Products).AsNoTracking().ToListAsync();
+        return Ok(category);
     }
 
     [HttpPost]
@@ -54,10 +44,9 @@ public class CategoryController : ControllerBase
             return BadRequest();
         }
 
-        _context.Categories.Add(category);
-        _context.SaveChanges();
+        var createdcategory = _repository.Create(category);
 
-        return new CreatedAtRouteResult("GetCategory", new { id = category.Id }, category);
+        return new CreatedAtRouteResult("GetCategory", new { id = createdcategory.Id }, category);
         //Aciona a rota GetCategory com o ID do produto criado e retorna o produto com os dados amostra.
     }
 
@@ -69,8 +58,7 @@ public class CategoryController : ControllerBase
             return BadRequest();
         }
 
-        _context.Entry(category).State = EntityState.Modified;
-        _context.SaveChanges();
+        _repository.Update(category);
 
         return Ok(category);
     }
@@ -78,15 +66,14 @@ public class CategoryController : ControllerBase
     [HttpDelete("{id:int}")]
     public ActionResult Delete(int id)
     {
-        var category = _context.Categories.FirstOrDefault(p => p.Id == id);
+        var category = _repository.GetCategoriesById(id);
         if (category is null)
         {
             return NotFound("Id inexistente");
         }
 
-        _context.Categories.Remove(category);
-        _context.SaveChanges();
+        var excludedCategory = _repository.Delete(category);
 
-        return Ok(category);
+        return Ok(excludedCategory);
     }
 }
