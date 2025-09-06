@@ -1,5 +1,6 @@
 ﻿using APICatalogo.Domain.Entities;
 using APICatalogo.Infrastructure;
+using APICatalogo.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,32 +10,46 @@ namespace APICatalogo.Controllers;
 [ApiController]
 public class ProductsController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    public ProductsController(AppDbContext context)
+    private readonly IProductRepository _productRepository;         //como temos funções especificas pra esse repositorio é necessario a injeção de dependencia dele, alem do generico
+    private readonly IRepository<Product> _repository;
+
+    public ProductsController(IProductRepository productRepository, IRepository<Product> repository)
     {
-        _context = context;
+        _productRepository = productRepository;
+        _repository = repository;
     }
-    
+
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Product>>> Get()                         //ActionResult funciona como um tipo de retorno pra aceitar o NotFound caso o retorno não seja um Enumerable<Product>
+    public ActionResult<IEnumerable<Product>> Get()                         //ActionResult funciona como um tipo de retorno pra aceitar o NotFound caso o retorno não seja um Enumerable<Product>
     {
-        var products = await _context.Products.AsNoTracking().ToListAsync();                          //Cria a lista de produtos, onde usamos Enumerable pois consome menos memoria nesse caso
+        var products = _repository.GetAll().ToList();                          
         if (products is null)
         {
             return NotFound("Produtos não encontrados");
         }
-        return products;
+        return Ok(products);
     }
 
     [HttpGet("{id:int:min(1)}", Name ="GetProduct")]
-    public async Task<ActionResult<Product>> Get(int id)
+    public ActionResult<Product> Get(int id)
     {
-        var product = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+        var product = _repository.Get(c => c.Id == id);
         if (product is null)
         {
             return NotFound("Id inexistente");
         }
-        return product;
+        return Ok(product);
+    }
+
+    [HttpGet("produtos/{id}")]
+    public ActionResult GetProductByCategory (int id)
+    {
+        var products = _productRepository.GetProductsByCategory(id);
+        if(products is null)
+        {
+            return NotFound("Produtos não encontrado");
+        }
+        return Ok(products);
     }
 
     [HttpPost]
@@ -45,10 +60,9 @@ public class ProductsController : ControllerBase
             return BadRequest();
         }
 
-        _context.Products.Add(product);
-        _context.SaveChanges();
+        var newProduct = _repository.Create(product);
 
-        return new CreatedAtRouteResult("GetProduct", new { id = product.Id }, product);
+        return new CreatedAtRouteResult("GetProduct", new { id = newProduct.Id }, newProduct);
         //Aciona a rota GetProduct com o ID do produto criado e retorna o produto com os dados amostra.
     }
 
@@ -60,24 +74,21 @@ public class ProductsController : ControllerBase
             return BadRequest();
         }
 
-        _context.Entry(product).State = EntityState.Modified;
-        _context.SaveChanges();
-
-        return Ok(product);
+        var updatedProduct = _repository.Update(product);
+        
+        return Ok(updatedProduct);
     }
 
     [HttpDelete("{id:int}")]
     public ActionResult Delete(int id)
     {
-        var product = _context.Products.FirstOrDefault(p => p.Id == id);
-        if (product is null)
+        var deletedProduct = _repository.Get(c => c.Id == id);
+
+        if (deletedProduct is null)
         {
-            return NotFound("Id inexistente");
+            return NotFound("Produto não encontrado");
         }
-
-        _context.Products.Remove(product);
-        _context.SaveChanges();
-
-        return Ok(product);
+        _repository.Delete(deletedProduct);
+        return Ok(deletedProduct);
     }
 }

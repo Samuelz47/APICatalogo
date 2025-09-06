@@ -11,8 +11,8 @@ namespace APICatalogo.Controllers;
 [ApiController]
 public class CategoryController : ControllerBase
 {
-    private readonly ICategoryRepository _repository;
-    public CategoryController(ICategoryRepository repository)
+    private readonly IRepository<Category> _repository;
+    public CategoryController(IRepository<Category> repository)
     {
         _repository = repository;
     }
@@ -21,14 +21,14 @@ public class CategoryController : ControllerBase
     [ServiceFilter(typeof(ApiLoggingFilter))]       //Aplicando filtro de loginng
     public ActionResult<IEnumerable<Category>> Get()                         //ActionResult funciona como um tipo de retorno pra aceitar o NotFound caso o retorno não seja um Enumerable<Category>
     {
-        var categories = _repository.GetCategories();
+        var categories = _repository.GetAll();
         return Ok(categories);
     }
 
     [HttpGet("{id:int:min(1)}", Name = "GetCategory")]
     public ActionResult<Category> Get(int id)
     {
-        var category = _repository.GetCategoryById(id);      
+        var category = _repository.Get(c => c.Id == id);      
         if (category is null)
         {
             return NotFound("Id inexistente");
@@ -66,7 +66,7 @@ public class CategoryController : ControllerBase
     [HttpDelete("{id:int}")]
     public ActionResult Delete(int id)
     {
-        var category = _repository.GetCategoriesById(id);
+        var category = _repository.Get(c => c.Id == id);
         if (category is null)
         {
             return NotFound("Id inexistente");
