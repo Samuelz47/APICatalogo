@@ -11,24 +11,24 @@ namespace APICatalogo.Controllers;
 [ApiController]
 public class CategoryController : ControllerBase
 {
-    private readonly IRepository<Category> _repository;
-    public CategoryController(IRepository<Category> repository)
+    private readonly IUnitOfWork _uof;
+    public CategoryController(IUnitOfWork uof)
     {
-        _repository = repository;
+        _uof = uof;
     }
 
     [HttpGet]
     [ServiceFilter(typeof(ApiLoggingFilter))]       //Aplicando filtro de loginng
     public ActionResult<IEnumerable<Category>> Get()                         //ActionResult funciona como um tipo de retorno pra aceitar o NotFound caso o retorno não seja um Enumerable<Category>
     {
-        var categories = _repository.GetAll();
+        var categories = _uof.CategoryRepository.GetAll();
         return Ok(categories);
     }
 
     [HttpGet("{id:int:min(1)}", Name = "GetCategory")]
     public ActionResult<Category> Get(int id)
     {
-        var category = _repository.Get(c => c.Id == id);      
+        var category = _uof.CategoryRepository.Get(c => c.Id == id);      
         if (category is null)
         {
             return NotFound("Id inexistente");
@@ -44,7 +44,8 @@ public class CategoryController : ControllerBase
             return BadRequest();
         }
 
-        var createdcategory = _repository.Create(category);
+        var createdcategory = _uof.CategoryRepository.Create(category);
+        _uof.Commit();
 
         return new CreatedAtRouteResult("GetCategory", new { id = createdcategory.Id }, category);
         //Aciona a rota GetCategory com o ID do produto criado e retorna o produto com os dados amostra.
@@ -58,7 +59,8 @@ public class CategoryController : ControllerBase
             return BadRequest();
         }
 
-        _repository.Update(category);
+        _uof.CategoryRepository.Update(category);
+        _uof.Commit();
 
         return Ok(category);
     }
@@ -66,13 +68,14 @@ public class CategoryController : ControllerBase
     [HttpDelete("{id:int}")]
     public ActionResult Delete(int id)
     {
-        var category = _repository.Get(c => c.Id == id);
+        var category = _uof.CategoryRepository.Get(c => c.Id == id);
         if (category is null)
         {
             return NotFound("Id inexistente");
         }
 
-        var excludedCategory = _repository.Delete(category);
+        var excludedCategory = _uof.CategoryRepository.Delete(category);
+        _uof.Commit();
 
         return Ok(excludedCategory);
     }
