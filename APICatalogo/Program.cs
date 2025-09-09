@@ -17,7 +17,7 @@ builder.Services.AddControllers(options =>
 .AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-});
+}).AddNewtonsoftJson();
 builder.Services.AddOpenApi();                                                  //referencia ao serviço 
 
 string mySqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");

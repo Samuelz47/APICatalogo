@@ -4,6 +4,7 @@ using APICatalogo.Infrastructure;
 using APICatalogo.Infrastructure.Repositories;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -75,6 +76,38 @@ public class ProductsController : ControllerBase
         //Aciona a rota GetProduct com o ID do produto criado e retorna o produto com os dados amostra.
     }
 
+    [HttpPatch("{id}/UpdatePartial")]
+    public ActionResult<ProductDTOUpdateResponse> Patch(int id, JsonPatchDocument<ProductDTOUpdateRequest> patchProductDto)
+    {
+        if (patchProductDto is null)
+        {
+            return BadRequest("Produto vazio");
+        }
+        if (id <= 0)
+        {
+            return BadRequest("ID inválido");
+        }
+
+        var product = _uof.ProductRepository.Get(c => c.Id == id); //Localizando o produto
+        if (product is null)
+        {
+            return NotFound("Produto não existe");
+        }
+
+        var productUpdateRequest = _mapper.Map<ProductDTOUpdateRequest>(product);
+        patchProductDto.ApplyTo(productUpdateRequest, ModelState);      //ModelState serve para verificar qualquer erro de validação
+        if(!ModelState.IsValid || !TryValidateModel(productUpdateRequest))
+        {
+            return BadRequest(ModelState);          //Caso o produto não esteja de acordo com as regras do DataAnnotations
+        }
+
+        _mapper.Map(productUpdateRequest, product);
+        _uof.ProductRepository.Update(product);
+        _uof.Commit();
+
+        return Ok(_mapper.Map<ProductDTOUpdateResponse>(product));
+    }
+    
     [HttpPut("{id:int:min(1)}")]
     public ActionResult<ProductDTO> Put(int id, ProductDTO productDto)
     {
