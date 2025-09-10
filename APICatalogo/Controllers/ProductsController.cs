@@ -56,6 +56,7 @@ public class ProductsController : ControllerBase
 
         return Ok(productsDto);
     }
+
     [HttpGet("{id:int:min(1)}", Name ="GetProduct")]
     public ActionResult<ProductDTO> Get(int id)
     {
