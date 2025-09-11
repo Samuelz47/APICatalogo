@@ -10,21 +10,23 @@ public class ProductRepository : Repository<Product>, IProductRepository
     {
     }
 
-    public PagedList<Product> GetProducts(ProductsParameters productsParameters)
+    public async Task<PagedList<Product>> GetProductsAsync(ProductsParameters productsParameters)
     {
-        var products = GetAll().OrderBy(p => p.Id).AsQueryable();
-        var orderedProducts = PagedList<Product>.ToPagedList(products, productsParameters.PageNumber, productsParameters.PageSize);
-        return orderedProducts;
+        var products = await GetAllAsync();
+        var orderedProducts = products.OrderBy(p => p.Id).AsQueryable();
+        var result = PagedList<Product>.ToPagedList(orderedProducts, productsParameters.PageNumber, productsParameters.PageSize);
+        return result;
     }
 
-    public IEnumerable<Product> GetProductsByCategory(int id)
+    public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(int id)
     {
-        return GetAll().Where(c => c.IdCategory == id);
+        var products = await GetAllAsync();
+        return products.Where(c => c.IdCategory == id);
     }
 
-    public PagedList<Product> GetProductsFilterPrice(FilterProductsPrice filterProductsParameters)
+    public async Task<PagedList<Product>> GetProductsFilterPriceAsync(FilterProductsPrice filterProductsParameters)
     {
-        var products = GetAll().AsQueryable();
+        var products = await GetAllAsync();
 
         if (filterProductsParameters.Price.HasValue && !string.IsNullOrEmpty(filterProductsParameters.PriceCriterion))
         {
@@ -42,7 +44,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
             }
         }
 
-        var filterProducts = PagedList<Product>.ToPagedList(products, filterProductsParameters.PageNumber, filterProductsParameters.PageSize);      //podemos paginar visto que a classe herda de QueryStrinParameters
+        var filterProducts = PagedList<Product>.ToPagedList(products.AsQueryable(), filterProductsParameters.PageNumber, filterProductsParameters.PageSize);      //podemos paginar visto que a classe herda de QueryStrinParameters
 
         return filterProducts;
     }

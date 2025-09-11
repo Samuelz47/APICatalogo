@@ -25,9 +25,9 @@ public class CategoryController : ControllerBase
 
     [HttpGet]
     [ServiceFilter(typeof(ApiLoggingFilter))]       //Aplicando filtro de loginng
-    public ActionResult<IEnumerable<CategoryDTO>> Get()                         //ActionResult funciona como um tipo de retorno pra aceitar o NotFound caso o retorno não seja um Enumerable<Category>
+    public async Task<ActionResult<IEnumerable<CategoryDTO>>> Get()                         //ActionResult funciona como um tipo de retorno pra aceitar o NotFound caso o retorno não seja um Enumerable<Category>
     {
-        var categories = _uof.CategoryRepository.GetAll().ToList();
+        var categories = await _uof.CategoryRepository.GetAllAsync();
 
         if (categories is null)
         {
@@ -39,9 +39,9 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet("{id:int:min(1)}", Name = "GetCategory")]
-    public ActionResult<CategoryDTO> Get(int id)
+    public async Task<ActionResult<CategoryDTO>> Get(int id)
     {
-        var category = _uof.CategoryRepository.Get(c => c.Id == id);      
+        var category = await _uof.CategoryRepository.GetAsync(c => c.Id == id);      
         if (category is null)
         {
             return NotFound("Id inexistente");
@@ -50,23 +50,23 @@ public class CategoryController : ControllerBase
         return Ok(category);
     }
     [HttpGet("pagination")]
-    public ActionResult<IEnumerable<CategoryDTO>> Get([FromQuery] CategoryParameters categoriesPara)
+    public async Task<ActionResult<IEnumerable<CategoryDTO>>> Get([FromQuery] CategoryParameters categoriesPara)
     {
-        var categories = _uof.CategoryRepository.GetCategories(categoriesPara);
+        var categories = await _uof.CategoryRepository.GetCategoriesAsync(categoriesPara);
 
         return GetCategories(categories);
     }
 
     [HttpGet("filter/name/pagination")]
-    public ActionResult<IEnumerable<CategoryDTO>> Get([FromQuery] FilterCategoryName filterCatName)
+    public async Task<ActionResult<IEnumerable<CategoryDTO>>> Get([FromQuery] FilterCategoryName filterCatName)
     {
-        var categories = _uof.CategoryRepository.GetCategoriesByName(filterCatName);
+        var categories = await _uof.CategoryRepository.GetCategoriesByNameAsync(filterCatName);
 
         return GetCategories(categories);
     }
 
     [HttpPost]
-    public ActionResult<CategoryDTO> Post(CategoryDTO categoryDto)
+    public async Task<ActionResult<CategoryDTO>> Post(CategoryDTO categoryDto)
     {
         if (categoryDto is null)
         {
@@ -75,7 +75,7 @@ public class CategoryController : ControllerBase
 
         var category = _mapper.Map<Category>(categoryDto);
         var createdCategory = _uof.CategoryRepository.Create(category);
-        _uof.Commit();
+        await _uof.CommitAsync();
         var createdCategoryDto = _mapper.Map<CategoryDTO>(createdCategory);
 
         return new CreatedAtRouteResult("GetCategory", new { id = createdCategoryDto.Id }, createdCategoryDto);
@@ -83,7 +83,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("{id:int:min(1)}")]
-    public ActionResult<CategoryDTO> Put(int id, CategoryDTO categoryDto)
+    public async Task<ActionResult<CategoryDTO>> Put(int id, CategoryDTO categoryDto)
     {
         if (id != categoryDto.Id)
         {
@@ -91,23 +91,23 @@ public class CategoryController : ControllerBase
         }
         var category = _mapper.Map<Category>(categoryDto);
         var updatedCategory = _uof.CategoryRepository.Update(category);
-        _uof.Commit();
+        await _uof.CommitAsync();
         var updatedCategoryDto = _mapper.Map<CategoryDTO>(updatedCategory);
 
         return Ok(updatedCategoryDto);
     }
 
     [HttpDelete("{id:int}")]
-    public ActionResult<CategoryDTO> Delete(int id)
+    public async Task<ActionResult<CategoryDTO>> Delete(int id)
     {
-        var category = _uof.CategoryRepository.Get(c => c.Id == id);
+        var category = await _uof.CategoryRepository.GetAsync(c => c.Id == id);
         if (category is null)
         {
             return NotFound("Id inexistente");
         }
 
         var excludedCategory = _uof.CategoryRepository.Delete(category);
-        _uof.Commit();
+        await _uof.CommitAsync();
         var excludedCategoryDto = _mapper.Map<CategoryDTO>(excludedCategory);
         return Ok(excludedCategoryDto);
     }

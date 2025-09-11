@@ -14,14 +14,14 @@ public class Repository<T> : IRepository<T> where T : class     //Onde T é uma 
         _context = context;
     }
 
-    public IEnumerable<T> GetAll()
+    public async Task<IEnumerable<T>> GetAllAsync()
     {
-        return _context.Set<T>().AsNoTracking().ToList();                  //o Set serve para pegar uma coleção ou tabela do tipo T(no caso a classe)
+        return await _context.Set<T>().AsNoTracking().ToListAsync();                  //o Set serve para pegar uma coleção ou tabela do tipo T(no caso a classe)
     }
 
-    public T? Get(Expression<Func<T, bool>> predicate)
+    public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate)
     {
-        return _context.Set<T>().FirstOrDefault(predicate);
+        return await _context.Set<T>().FirstOrDefaultAsync(predicate);
     }
 
     public T Create(T entity)
