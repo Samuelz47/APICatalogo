@@ -54,20 +54,15 @@ public class CategoryController : ControllerBase
     {
         var categories = _uof.CategoryRepository.GetCategories(categoriesPara);
 
-        var metadata = new
-        {
-            categories.CurrentPage,
-            categories.TotalPages,
-            categories.PageSize,
-            categories.TotalCount,
-            categories.HasNexts,
-            categories.HasPrevious
-        };
+        return GetCategories(categories);
+    }
 
-        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
-        var categoriesDto = _mapper.Map<IEnumerable<CategoryDTO>>(categories);
+    [HttpGet("filter/name/pagination")]
+    public ActionResult<IEnumerable<CategoryDTO>> Get([FromQuery] FilterCategoryName filterCatName)
+    {
+        var categories = _uof.CategoryRepository.GetCategoriesByName(filterCatName);
 
-        return Ok(categoriesDto);
+        return GetCategories(categories);
     }
 
     [HttpPost]
@@ -115,5 +110,23 @@ public class CategoryController : ControllerBase
         _uof.Commit();
         var excludedCategoryDto = _mapper.Map<CategoryDTO>(excludedCategory);
         return Ok(excludedCategoryDto);
+    }
+
+    private ActionResult<IEnumerable<CategoryDTO>> GetCategories(PagedList<Category> categories)
+    {
+        var metadata = new
+        {
+            categories.CurrentPage,
+            categories.TotalPages,
+            categories.PageSize,
+            categories.TotalCount,
+            categories.HasNexts,
+            categories.HasPrevious
+        };
+
+        Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+        var categoriesDto = _mapper.Map<IEnumerable<CategoryDTO>>(categories);
+
+        return Ok(categoriesDto);
     }
 }

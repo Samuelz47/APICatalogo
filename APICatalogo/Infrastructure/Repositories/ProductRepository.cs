@@ -21,4 +21,29 @@ public class ProductRepository : Repository<Product>, IProductRepository
     {
         return GetAll().Where(c => c.IdCategory == id);
     }
+
+    public PagedList<Product> GetProductsFilterPrice(FilterProductsPrice filterProductsParameters)
+    {
+        var products = GetAll().AsQueryable();
+
+        if (filterProductsParameters.Price.HasValue && !string.IsNullOrEmpty(filterProductsParameters.PriceCriterion))
+        {
+            if(filterProductsParameters.PriceCriterion.Equals("maior", StringComparison.OrdinalIgnoreCase))
+            {
+                products = products.Where(p => p.Price > filterProductsParameters.Price.Value).OrderBy(p => p.Price);
+            }
+            else if(filterProductsParameters.PriceCriterion.Equals("menor", StringComparison.OrdinalIgnoreCase))
+            {
+                products = products.Where(p => p.Price < filterProductsParameters.Price.Value).OrderBy(p => p.Price);
+            }
+            else if (filterProductsParameters.PriceCriterion.Equals("igual", StringComparison.OrdinalIgnoreCase))
+            {
+                products = products.Where(p => p.Price == filterProductsParameters.Price.Value).OrderBy(p => p.Price);
+            }
+        }
+
+        var filterProducts = PagedList<Product>.ToPagedList(products, filterProductsParameters.PageNumber, filterProductsParameters.PageSize);      //podemos paginar visto que a classe herda de QueryStrinParameters
+
+        return filterProducts;
+    }
 }
