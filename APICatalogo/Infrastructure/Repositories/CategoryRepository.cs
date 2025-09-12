@@ -1,6 +1,8 @@
 ﻿using APICatalogo.Domain.Entities;
 using APICatalogo.Shared.Pagination;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
+using X.PagedList.Extensions;
 
 namespace APICatalogo.Infrastructure.Repositories;
 
@@ -10,26 +12,26 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
     {
     }
 
-    public async Task<PagedList<Category>> GetCategoriesAsync(CategoryParameters categoryParameters)
+    public async Task<IPagedList<Category>> GetCategoriesAsync(CategoryParameters categoryParameters)
     {
         var categories =  await GetAllAsync();
         var orderedCategories = categories.OrderBy(p => p.Id).AsQueryable();
 
-        var result = PagedList<Category>.ToPagedList(orderedCategories, categoryParameters.PageNumber, categoryParameters.PageSize);
-        return result;
+        var result = orderedCategories.ToPagedList(categoryParameters.PageNumber, categoryParameters.PageSize);
+        return await Task.FromResult(result);
     }
 
-    public async Task<PagedList<Category>> GetCategoriesByNameAsync(FilterCategoryName filterCategoryName)
+    public async Task<IPagedList<Category>> GetCategoriesByNameAsync(FilterCategoryName filterCategoryName)
     {
         var categories = await GetAllAsync();
 
         if (!string.IsNullOrEmpty(filterCategoryName.Name))
         {
-            categories = categories.Where(c => c.Name.Contains(filterCategoryName.Name));
+            categories = categories.Where(c => c.Name.Contains(filterCategoryName.Name, StringComparison.OrdinalIgnoreCase));
         }
 
-        var filterCategory = PagedList<Category>.ToPagedList(categories.AsQueryable(), filterCategoryName.PageNumber, filterCategoryName.PageSize);
+        var filterCategory = categories.ToPagedList(filterCategoryName.PageNumber, filterCategoryName.PageSize);
 
-        return filterCategory;
+        return await Task.FromResult(filterCategory);
     }
 }

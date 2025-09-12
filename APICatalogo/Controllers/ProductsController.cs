@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using X.PagedList;
 
 namespace APICatalogo.Controllers;
 [Route("[controller]")]
@@ -156,16 +157,16 @@ public class ProductsController : ControllerBase
         return Ok(deletedProductDto);
     }
 
-    private ActionResult<IEnumerable<ProductDTO>> GetProducts(PagedList<Product> products)
+    private ActionResult<IEnumerable<ProductDTO>> GetProducts(IPagedList<Product> products)
     {
         var metadata = new
         {
-            products.CurrentPage,
-            products.TotalPages,
+            products.PageCount,
+            products.TotalItemCount,
             products.PageSize,
-            products.TotalCount,
-            products.HasNexts,
-            products.HasPrevious
+            products.Count,
+            products.HasNextPage,
+            products.HasPreviousPage
         };
 
         Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));

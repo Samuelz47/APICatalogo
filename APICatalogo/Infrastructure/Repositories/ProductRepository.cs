@@ -1,6 +1,8 @@
 ﻿using APICatalogo.Domain.Entities;
 using APICatalogo.Shared.Pagination;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
+using X.PagedList.Extensions;
 
 namespace APICatalogo.Infrastructure.Repositories;
 
@@ -10,12 +12,12 @@ public class ProductRepository : Repository<Product>, IProductRepository
     {
     }
 
-    public async Task<PagedList<Product>> GetProductsAsync(ProductsParameters productsParameters)
+    public async Task<IPagedList<Product>> GetProductsAsync(ProductsParameters productsParameters)
     {
         var products = await GetAllAsync();
         var orderedProducts = products.OrderBy(p => p.Id).AsQueryable();
-        var result = PagedList<Product>.ToPagedList(orderedProducts, productsParameters.PageNumber, productsParameters.PageSize);
-        return result;
+        var result = orderedProducts.ToPagedList(productsParameters.PageNumber, productsParameters.PageSize);
+        return await Task.FromResult(result);
     }
 
     public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(int id)
@@ -24,7 +26,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
         return products.Where(c => c.IdCategory == id);
     }
 
-    public async Task<PagedList<Product>> GetProductsFilterPriceAsync(FilterProductsPrice filterProductsParameters)
+    public async Task<IPagedList<Product>> GetProductsFilterPriceAsync(FilterProductsPrice filterProductsParameters)
     {
         var products = await GetAllAsync();
 
@@ -44,8 +46,8 @@ public class ProductRepository : Repository<Product>, IProductRepository
             }
         }
 
-        var filterProducts = PagedList<Product>.ToPagedList(products.AsQueryable(), filterProductsParameters.PageNumber, filterProductsParameters.PageSize);      //podemos paginar visto que a classe herda de QueryStrinParameters
+        var filterProducts = products.ToPagedList(filterProductsParameters.PageNumber, filterProductsParameters.PageSize);      //podemos paginar visto que a classe herda de QueryStrinParameters
 
-        return filterProducts;
+        return await Task.FromResult(filterProducts);
     }
 }
