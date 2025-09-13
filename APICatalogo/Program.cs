@@ -4,6 +4,7 @@ using APICatalogo.Infrastructure;
 using APICatalogo.Infrastructure.Repositories;
 using APICatalogo.Shared.Extensions;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -19,6 +20,13 @@ builder.Services.AddControllers(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 }).AddNewtonsoftJson();
 builder.Services.AddOpenApi();                                                  //referencia ao serviço 
+
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication("Bearer").AddBearerToken().AddJwtBearer();
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()                  //chamada a identity para geração de tabelas
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();                
 
 string mySqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -42,7 +50,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
