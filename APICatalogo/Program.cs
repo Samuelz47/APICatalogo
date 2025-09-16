@@ -1,14 +1,20 @@
+using APICatalogo.Domain.Entities;
 using APICatalogo.DTOs.Mappings;
 using APICatalogo.Filters;
 using APICatalogo.Infrastructure;
 using APICatalogo.Infrastructure.Repositories;
 using APICatalogo.Shared.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+//buscando no appsettings a secret key
+var secretKey = builder.Configuration["JWT:SecretKey"] ?? throw new ArgumentException("Invalid secret key");
 
 //ReferenceHandler ignorando os ciclos do Json por ter Referencia de Produto em Categoria e vice-versa.
 builder.Services.AddControllers(options =>
@@ -22,9 +28,29 @@ builder.Services.AddControllers(options =>
 builder.Services.AddOpenApi();                                                  //referencia ao serviço 
 
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication("Bearer").AddBearerToken().AddJwtBearer();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    //Definindo o scheme de autentição e desafio como JWT
+}).AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ClockSkew = TimeSpan.Zero,
+        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+    };
+});
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()                  //chamada a identity para geração de tabelas
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()                  //chamada a identity para geração de tabelas
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();                
 
