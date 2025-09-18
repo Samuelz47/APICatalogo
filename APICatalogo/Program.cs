@@ -3,6 +3,7 @@ using APICatalogo.DTOs.Mappings;
 using APICatalogo.Filters;
 using APICatalogo.Infrastructure;
 using APICatalogo.Infrastructure.Repositories;
+using APICatalogo.Services;
 using APICatalogo.Shared.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -26,7 +27,6 @@ builder.Services.AddControllers(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 }).AddNewtonsoftJson();
 builder.Services.AddOpenApi();                                                  //referencia ao serviço 
-
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
 {
@@ -62,6 +62,7 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddAutoMapper(typeof(ProductDTOMappingProfile), typeof(CategoryDTOMappingProfile));
 
 var app = builder.Build();
