@@ -4,6 +4,8 @@ using APICatalogo.Infrastructure;
 using APICatalogo.Infrastructure.Repositories;
 using APICatalogo.Shared.Pagination;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +28,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "UserOnly")]
     public async Task<ActionResult<IEnumerable<ProductDTO>>> Get()                         //ActionResult funciona como um tipo de retorno pra aceitar o NotFound caso o retorno não seja um Enumerable<Product>
     {
         var products = await _uof.ProductRepository.GetAllAsync();

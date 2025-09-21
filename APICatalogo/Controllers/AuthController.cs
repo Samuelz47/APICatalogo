@@ -1,6 +1,8 @@
 ﻿using APICatalogo.Domain.Entities;
 using APICatalogo.DTOs;
 using APICatalogo.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,13 +19,15 @@ public class AuthController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(ITokenService tokenService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+    public AuthController(ITokenService tokenService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, ILogger<AuthController> logger)
     {
         _tokenService = tokenService;
         _userManager = userManager;
         _roleManager = roleManager;
         _configuration = configuration;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -40,6 +44,7 @@ public class AuthController : ControllerBase
             {
                 new Claim(ClaimTypes.Name, user.UserName!),
                 new Claim(ClaimTypes.Email, user.Email!),
+                new Claim("id", user.UserName!),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 //Lista de claims usadas para serem incluidas no token, a ultima trata-se de um id exclusivo para o token, em formato GUID
             };
@@ -159,6 +164,7 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("revoke/{username}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "ExclusiveOnly")]
 
     public async Task<IActionResult> Revoke(string username)
     {
@@ -174,5 +180,75 @@ public class AuthController : ControllerBase
         await _userManager.UpdateAsync(user);
 
         return NoContent();
+    }
+
+    [HttpPost]
+    [Route("CreateRole")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "SuperAdminOnly")]
+
+    public async Task<IActionResult> CreateRole(string roleName)
+    {
+        var roleExist = await _roleManager.RoleExistsAsync(roleName);       //verifica se o nome já existe 
+        if (!roleExist)
+        {
+            var roleResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
+
+            if (roleResult.Succeeded)        //Se a role for criada... 
+            {
+                _logger.LogInformation(1, "RolesAdded");
+                return StatusCode(StatusCodes.Status200OK, new Response
+                {
+                    Status = "Success",
+                    Message = $"Role {roleName} added successfully"
+                });
+            }
+            else
+            {
+                _logger.LogInformation(2, "Error");
+                return StatusCode(StatusCodes.Status400BadRequest, new Response
+                {
+                    Status = "Error",
+                    Message = $"Issue adding the new {roleName} role"
+                });
+            }
+        }
+        return StatusCode(StatusCodes.Status400BadRequest, new Response
+        {
+            Status = "Error",
+            Message = "Role already exist."
+        });
+    }
+
+    [HttpPost]
+    [Route("AddUserToRole")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "SuperAdminOnly")]
+
+    public async Task<IActionResult> AddUserToRole(string email, string roleName)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if (user != null)
+        {
+            var result = await _userManager.AddToRoleAsync(user, roleName);         //adicionando a role no usuario
+            if (result.Succeeded)
+            {
+                _logger.LogInformation(1, $"Add user {user.Email} to role {roleName}");
+                return StatusCode(StatusCodes.Status200OK, new Response
+                {
+                    Status = "Success",
+                    Message = $"Add user {user.Email} to role {roleName}"
+                });
+            }
+            else
+            {
+                _logger.LogInformation(2, $"Error: Unable to add user {user.Email} to the {roleName} role");
+                return StatusCode(StatusCodes.Status400BadRequest, new Response
+                {
+                    Status = "Error",
+                    Message = $"Error: Unable to add user {user.Email} to the {roleName} role"
+                });
+            }
+        }
+        return BadRequest(new { error = "Unable to find user" });
     }
 }

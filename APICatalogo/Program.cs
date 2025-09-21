@@ -5,6 +5,7 @@ using APICatalogo.Infrastructure;
 using APICatalogo.Infrastructure.Repositories;
 using APICatalogo.Services;
 using APICatalogo.Shared.Extensions;
+using APICatalogo.Transformer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -26,29 +27,38 @@ builder.Services.AddControllers(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 }).AddNewtonsoftJson();
-builder.Services.AddOpenApi();                                                  //referencia ao serviço 
-builder.Services.AddAuthorization();
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    //Definindo o scheme de autentição e desafio como JWT
-}).AddJwtBearer(options =>
-{
-    options.SaveToken = true;
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters()
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ClockSkew = TimeSpan.Zero,
-        ValidAudience = builder.Configuration["JWT:ValidAudience"],
-        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
-    };
+        options.TokenValidationParameters = new()
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "http://localhost:5127",
+            ValidAudience = "https://localhost:7125",
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("Esta_e_uma_chave_secreta_longa_e_segura_com_no_minimo_32_caracteres_e_numeros_12345"))
+        };
+    });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));      //Exige que o usuario tenha a role de Admin
+    options.AddPolicy("SuperAdminOnly", policy => policy.RequireRole("Admin").RequireClaim("id", "samuquinha")); //Exige que o usuario tenha além da role, a claim expecifica
+    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+    options.AddPolicy("ExclusiveOnly", policy => policy.RequireAssertion(context =>
+                                                                         context.User.HasClaim(claim =>
+                                                                         claim.Type == "id" &&
+                                                                         claim.Value == "samuquinha") ||
+                                                                         context.User.IsInRole("SuperAdmin")));
+    //Com RequireAssertion temos uma requisição mais personalizada
 });
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+});
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()                  //chamada a identity para geração de tabelas
                 .AddEntityFrameworkStores<AppDbContext>()
@@ -72,7 +82,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
     app.MapOpenApi();
-    app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "weather api"));                    //referencia ao middleware
+    app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "AuthJwt v1"));                    //referencia ao middleware
     app.ConfigureExceptionHandler();
 }
 
