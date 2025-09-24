@@ -9,10 +9,12 @@ using APICatalogo.Transformer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 //buscando no appsettings a secret key
@@ -69,6 +71,32 @@ builder.Services.AddOpenApi(options =>
 });
 builder.Services.AddSwaggerGen();
 
+/*builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter(policyName: "fixedWindow", optionsWindow =>
+    {
+        optionsWindow.PermitLimit = 1;      //Permite 1 requisição
+        optionsWindow.Window = TimeSpan.FromSeconds(5);     //A cada 5 segundos
+        optionsWindow.QueueLimit = 2;       //Se o limite for atingido aceita 2 filas
+        optionsWindow.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;  //Ordem da fila do mais antigo primeiro
+    });
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});*/
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpcontext =>       //Criando um limite de taxa particionado
+                            RateLimitPartition.GetFixedWindowLimiter(partitionKey: httpcontext.User.Identity?.Name ??       //Obtendo partitionKey
+                                                                                   httpcontext.Request.Headers.Host.ToString(),     //Caso o usuario esteja disponivel usa ele caso não usa o Host
+                                                                                   factory: partition => new FixedWindowRateLimiterOptions          //Configurando
+                                                                                   {
+                                                                                       AutoReplenishment = true,        //Permite reabastecimento de limite
+                                                                                       PermitLimit = 5,                 //Permitindo até 5 requisições
+                                                                                       QueueLimit = 0,                  //Não permite Fila
+                                                                                       Window = TimeSpan.FromSeconds(10)    //10 segundos por janela
+                                                                                   }));
+});
+
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()                  //chamada a identity para geração de tabelas
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();                
@@ -98,6 +126,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseRateLimiter();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
