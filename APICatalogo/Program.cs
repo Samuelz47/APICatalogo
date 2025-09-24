@@ -27,6 +27,15 @@ builder.Services.AddControllers(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 }).AddNewtonsoftJson();
+
+//Adicionando Cors
+builder.Services.AddCors(options => options.AddPolicy(name: "OrigensComAcessoPermitido", policy =>   
+{
+    policy.WithOrigins("https://localhost:7022")     //Definindo o acesso a origem
+          .WithMethods("GET", "POST")               //Métodos permitidos
+          .AllowAnyHeader();                        //Permitindo todos os cabeçalhos
+}));
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -87,6 +96,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
