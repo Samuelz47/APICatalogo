@@ -6,6 +6,7 @@ using APICatalogo.Infrastructure.Repositories;
 using APICatalogo.Services;
 using APICatalogo.Shared.Extensions;
 using APICatalogo.Transformer;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -96,6 +97,17 @@ builder.Services.AddRateLimiter(options =>
                                                                                        Window = TimeSpan.FromSeconds(10)    //10 segundos por janela
                                                                                    }));
 });
+
+/*builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);       //Definindo a versão padrão
+    options.AssumeDefaultVersionWhenUnspecified = true;     //Quando a versão não for especificada a versão padrão será usada
+    options.ReportApiVersions = true;                       //As versão serão imprimidas no header do response
+}).AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";                     //Formato da versão
+    options.SubstituteApiVersionInUrl = true;               //Substituira a versão da API na URL ao gerar links
+});*/
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()                  //chamada a identity para geração de tabelas
                 .AddEntityFrameworkStores<AppDbContext>()
